@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden Poete : Hexagon Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+KR:wght@300;400;600;900&family=Pretendard:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* [System: Ultra Luxury Dark] */
+        :root {
+            --bg-deep: #050505;
+            --surface: #121212;
+            --gold: #c5a059;
+            --gold-glow: rgba(197, 160, 89, 0.4);
+            --red-alert: #ff3b30;
+            --text-main: #f2f2f2;
+            --text-sub: #888;
+            --font-display: 'Cinzel', serif;
+            --font-serif: 'Noto Serif KR', serif;
+            --font-sans: 'Pretendard', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-deep); color: var(--text-main);
+            font-family: var(--font-sans); margin: 0; padding: 0;
+            line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; border-left: 1px solid #222; border-right: 1px solid #222; }
+
+        /* [Main List View] */
+        .hero-sec {
+            padding: 80px 24px 40px; text-align: center;
+            background: radial-gradient(circle at 50% 0%, #1a1500 0%, #050505 70%);
+        }
+        .brand-logo { font-family: var(--font-display); font-size: 13px; letter-spacing: 5px; color: var(--gold); margin-bottom: 20px; display: block; opacity: 0.9; }
+        .hero-title { font-family: var(--font-serif); font-size: 32px; line-height: 1.3; font-weight: 300; color: #fff; margin: 0; }
+        .hero-title b { font-weight: 800; border-bottom: 1px solid var(--gold); }
+
+        .card-list { padding: 24px; display: flex; flex-direction: column; gap: 40px; padding-bottom: 100px; }
+        
+        .prog-card { cursor: pointer; position: relative; group; }
+        .pc-img-box {
+            width: 100%; height: 360px; border-radius: 2px; overflow: hidden; position: relative;
+            border: 1px solid #333; transition: border-color 0.3s;
+        }
+        .prog-card:hover .pc-img-box { border-color: var(--gold); }
+        .pc-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; filter: brightness(0.8); }
+        .prog-card:hover .pc-img { transform: scale(1.05); }
+        
+        .pc-info {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 30px 24px;
+            background: linear-gradient(to top, #000 20%, transparent);
+        }
+        .pc-day { font-family: var(--font-display); color: var(--gold); font-size: 14px; margin-bottom: 8px; letter-spacing: 2px; }
+        .pc-tit { font-family: var(--font-serif); font-size: 26px; color: #fff; margin: 0; font-weight: 600; line-height: 1.2; }
+        
+        .pc-badge {
+            position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(10px); padding: 6px 12px; border: 1px solid rgba(255,255,255,0.2);
+            font-size: 12px; color: #fff; font-weight: 600;
+        }
+
+        /* [Detail View Overlay] */
+        #view-detail {
+            display: none; position: fixed; inset: 0; z-index: 100; background: #050505; overflow-y: auto;
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideIn { from {transform: translateX(100%);} to {transform: translateX(0);} }
+
+        .dt-hero { height: 45vh; position: relative; }
+        .dt-bg { width: 100%; height: 100%; object-fit: cover; }
+        .dt-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #050505, transparent); }
+        
+        .dt-back {
+            position: absolute; top: 20px; left: 20px; z-index: 110; width: 44px; height: 44px;
+            background: rgba(0,0,0,0.5); border: 1px solid #444; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer;
+        }
+
+        .dt-content { padding: 0 24px 120px; position: relative; top: -80px; }
+        .dt-label { color: var(--gold); font-size: 12px; font-weight: 700; border: 1px solid var(--gold); padding: 5px 10px; display: inline-block; margin-bottom: 20px; background: #000; letter-spacing: 1px; }
+        .dt-head { font-family: var(--font-serif); font-size: 34px; line-height: 1.3; color: #fff; margin: 0 0 20px; }
+        .dt-desc { font-size: 15px; color: #bbb; line-height: 1.7; margin-bottom: 40px; }
+
+        /* Space Gallery */
+        .space-sec { margin-bottom: 50px; }
+        .sec-head { font-size: 13px; color: #666; letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 12px; margin-bottom: 20px; font-weight: 700; display: flex; justify-content: space-between; }
+        .gallery-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+        .gallery-scroll::-webkit-scrollbar { display: none; }
+        .g-item { 
+            flex: 0 0 280px; height: 180px; border-radius: 2px; overflow: hidden; scroll-snap-align: start; 
+            position: relative; border: 1px solid #222;
+        }
+        .g-img { width: 100%; height: 100%; object-fit: cover; }
+        .g-cap { position: absolute; bottom: 10px; left: 10px; font-size: 11px; color: #fff; background: rgba(0,0,0,0.6); padding: 2px 6px; }
+
+        /* Booking Bar */
+        .btm-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 150;
+            background: rgba(10,10,10,0.95); backdrop-filter: blur(10px);
+            padding: 16px 24px; border-top: 1px solid #222;
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 480px; margin: 0 auto; left: 50%; transform: translateX(-50%);
+        }
+        .n-btn {
+            background: #03C75A; color: #fff; padding: 0 24px; height: 52px; border-radius: 2px;
+            font-weight: 700; font-size: 16px; border: none; cursor: pointer; flex: 1; margin-left: 20px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        /* [Test UI - The Hexagon] */
+        #view-test {
+            display: none; position: fixed; inset: 0; z-index: 200; background: #000;
+            padding: 40px 30px; flex-direction: column; justify-content: center;
+        }
+        .hex-visual {
+            width: 120px; height: 120px; margin: 0 auto 40px; position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .hex-shape {
+            position: absolute; inset: 0; border: 2px solid var(--gold);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: pulseHex 2s infinite;
+        }
+        @keyframes pulseHex { 0% {transform: scale(1); opacity: 1;} 50% {transform: scale(1.1); opacity: 0.5;} 100% {transform: scale(1); opacity: 1;} }
+        
+        .test-progress { font-family: var(--font-display); color: var(--gold); text-align: center; margin-bottom: 20px; font-size: 14px; letter-spacing: 2px; }
+        .test-q { font-size: 22px; color: #fff; text-align: center; margin-bottom: 40px; font-weight: 600; line-height: 1.4; }
+        
+        .opt-btn {
+            width: 100%; padding: 18px; background: #161616; border: 1px solid #333;
+            color: #ccc; margin-bottom: 12px; text-align: left; cursor: pointer; transition: 0.2s;
+            position: relative; overflow: hidden;
+        }
+        .opt-btn:hover { border-color: var(--gold); background: #222; color: #fff; }
+        .opt-btn::after { content:''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--gold); opacity: 0; transition: 0.2s; }
+        .opt-btn:hover::after { opacity: 1; }
+
+        /* Penalty Alert */
+        .penalty-msg {
+            font-size: 12px; color: #666; text-align: center; margin-top: 30px;
+            border-top: 1px solid #222; padding-top: 20px;
+        }
+        .penalty-msg b { color: var(--red-alert); }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="hero-sec">
+            <span class="brand-logo">GARDEN POETE</span>
+            <h1 class="hero-title">검증된 소수만을 위한<br><b>육각형의 정원</b></h1>
+        </div>
+
+        <div class="card-list">
+            </div>
+
+        <div id="view-detail">
+            <div class="dt-hero">
+                <div class="dt-back" onclick="closeDetail()">←</div>
+                <img id="dt-img" class="dt-bg" src="">
+                <div class="dt-overlay"></div>
+            </div>
+            
+            <div class="dt-content">
+                <span id="dt-tag" class="dt-label">TAG</span>
+                <h2 id="dt-title" class="dt-head">Title</h2>
+                <p id="dt-desc" class="dt-desc">Description</p>
+
+                <div class="space-sec">
+                    <div class="sec-head">
+                        <span>SPACE : GARDEN POETE</span>
+                        <span style="color:var(--gold);">✦ VIEW</span>
+                    </div>
+                    <div class="gallery-scroll">
+                        <div class="g-item">
+                            <img src="https://images.unsplash.com/photo-1585320806206-3887c945417b?q=80&w=1000" class="g-img">
+                            <span class="g-cap">Main Garden</span>
+                        </div>
+                        <div class="g-item">
+                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000" class="g-img">
+                            <span class="g-cap">Dining Hall</span>
+                        </div>
+                        <div class="g-item">
+                            <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1000" class="g-img">
+                            <span class="g-cap">Private Room</span>
+                        </div>
+                        <div class="g-item">
+                            <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1000" class="g-img">
+                            <span class="g-cap">Whiskey Bar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-sec">
+                    <div class="sec-head">TIMELINE</div>
+                    <div id="dt-timeline"></div>
+                </div>
+
+                <div style="height: 50px;"></div>
+            </div>
+
+            <div class="btm-nav">
+                <div style="line-height:1.2;">
+                    <span style="font-size:11px; color:#666; display:block;">ENTRY FEE</span>
+                    <strong style="color:#fff; font-size:20px;" id="dt-price">0</strong>
+                </div>
+                <button class="n-btn" onclick="startHexagonTest()">
+                    <span>N 예약하기 (검증)</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-test">
+            <div class="hex-visual">
+                <div class="hex-shape"></div>
+                <span style="color:#fff; font-size:12px; z-index:1;">AI SCAN</span>
+            </div>
+            
+            <div id="test-screen">
+                <div class="test-progress">DATA ANALYSIS <span id="q-idx">1</span>/6</div>
+                <div class="test-q" id="q-title">질문 내용</div>
+                <div id="q-opts"></div>
+                
+                <div class="penalty-msg">
+                    * 허위 사실 기재 시 <b>영구 제명 및 법적 책임</b>을 묻습니다.<br>
+                    가든포에트는 100% 검증된 만남을 지향합니다.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // [DB] Program Data
+        const programs = [
+            {
+                id: 'wed', tag: 'WED | TASTE', price: '70,000 KRW',
+                title: '취향이 자산인<br>사람들의 수요일',
+                img: 'https://images.unsplash.com/photo-1569937756447-e19032128e5b?q=80&w=800', // Whiskey
+                desc: '술을 취하려고 마시는 게 아닙니다. 향을 즐기기 위해 마십니다. 서로의 확고한 취향을 안주 삼아 밀도 높은 대화를 나누는 살롱.',
+                timeline: [
+                    {t:'19:30', d:'Welcome Tasting (위스키 3종)'},
+                    {t:'20:30', d:'Blind Value Betting (게임)'},
+                    {t:'22:00', d:'1:1 After Talk'}
+                ]
+            },
+            {
+                id: 'thu', tag: 'THU | PERSONA', price: '60,000 KRW',
+                title: '제3자의 눈으로<br>나를 기록하다',
+                img: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=800', // Studio
+                desc: '결혼 시장에서 보여지는 나는 중요합니다. 가든포에트 스튜디오에서 전문 작가와 함께 당신의 가장 매력적인 페르소나를 완성하세요.',
+                timeline: [
+                    {t:'19:30', d:'Image Feedback (익명)'},
+                    {t:'20:00', d:'Profile Shooting (전문가)'},
+                    {t:'21:30', d:'Photo Review & Wine'}
+                ]
+            },
+            {
+                id: 'fri', tag: 'FRI | UNMASKED', price: '80,000 KRW',
+                title: '가면 뒤의 도파민<br>가장 솔직한 끌림',
+                img: 'https://images.unsplash.com/photo-1514525253440-b393452e8d26?q=80&w=800', // Party
+                desc: '이름표 대신 닉네임, 직업 대신 눈빛. 사회적 계급장을 떼고 오직 남녀로서의 본능적인 끌림을 확인하는 금요일 밤.',
+                timeline: [
+                    {t:'20:00', d:'Blind Entry (닉네임)'},
+                    {t:'20:30', d:'Vibe Flow (DJ Music)'},
+                    {t:'22:00', d:'Silent Signal (장미 전달)'}
+                ]
+            },
+            {
+                id: 'sat', tag: 'SAT | NOBLE', price: '150,000 KRW',
+                title: '검증된 거목들의<br>하이엔드 사교',
+                img: 'https://images.unsplash.com/photo-1551505304-43cb5d836079?q=80&w=800', // Lounge
+                desc: '성공한 사람들은 시간 낭비를 싫어합니다. 자산, 소득, 직업이 100% 검증된 육각형 인재들만의 프라이빗 노블 살롱.',
+                timeline: [
+                    {t:'18:00', d:'Verification (명함 교환)'},
+                    {t:'19:00', d:'Value Q&A (가치관 토론)'},
+                    {t:'21:00', d:'Private Networking'}
+                ]
+            },
+            {
+                id: 'sun', tag: 'SUN | RETREAT', price: '60,000 KRW',
+                title: '영혼을 채우는<br>일요일의 브런치',
+                img: 'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=800', // Brunch
+                desc: '자극적인 만남에 지친 당신에게. 술 대신 커피와 책, 그리고 건강한 생각을 가진 사람들과 나누는 회복의 시간.',
+                timeline: [
+                    {t:'11:00', d:'Coffee Ritual (핸드드립)'},
+                    {t:'12:00', d:'Insight Share (대화)'},
+                    {t:'13:30', d:'Garden Walk'}
+                ]
+            }
+        ];
+
+        // [DB] Test Questions
+        const questions = [
+            { q: "01. PHYSICAL CHECK\n키와 본인의 외모 등급은?", opts: ["상위 5% (모델급)", "상위 10% (호감형)", "상위 30% (훈훈함)", "평범함"] },
+            { q: "02. ASSET CHECK\n본인 명의 순자산 규모는?", opts: ["50억 이상 (High)", "30억 ~ 50억", "10억 ~ 30억 (자가)", "10억 미만"] },
+            { q: "03. INCOME CHECK\n작년 원천징수 연소득은?", opts: ["3억 이상", "1.5억 ~ 3억", "8천 ~ 1.5억", "8천 미만"] },
+            { q: "04. JOB TITLE\n현재 종사하고 있는 직군은?", opts: ["전문직 (의사/변호사)", "대기업/공기업", "사업가/대표", "프리랜서/예술"] },
+            { q: "05. EDUCATION\n최종 학력은?", opts: ["해외 명문대", "SKY / 의치한약수", "서울 4년제", "기타"] },
+            { q: "06. FAMILY STATUS\n부모님의 노후 준비 상태는?", opts: ["매우 여유로움 (지원 가능)", "평범함 (각자도생)", "부양 필요"] }
+        ];
+
+        // 1. Init List
+        const listContainer = document.querySelector('.card-list');
+        programs.forEach(p => {
+            const html = `
+                <div class="prog-card" onclick="openDetail('${p.id}')">
+                    <div class="pc-img-box">
+                        <img src="${p.img}" class="pc-img">
+                        <span class="pc-badge">${p.price}</span>
+                    </div>
+                    <div class="pc-info">
+                        <div class="pc-day">${p.tag}</div>
+                        <h3 class="pc-tit">${p.title}</h3>
+                    </div>
+                </div>
+            `;
+            listContainer.innerHTML += html;
+        });
+
+        // 2. Open Detail
+        let currentProgram = null;
+
+        function openDetail(id) {
+            currentProgram = programs.find(p => p.id === id);
+            
+            document.getElementById('dt-img').src = currentProgram.img;
+            document.getElementById('dt-tag').innerText = currentProgram.tag;
+            document.getElementById('dt-title').innerHTML = currentProgram.title;
+            document.getElementById('dt-desc').innerText = currentProgram.desc;
+            document.getElementById('dt-price').innerText = currentProgram.price;
+
+            // Timeline Render
+            const tlContainer = document.getElementById('dt-timeline');
+            tlContainer.innerHTML = '';
+            currentProgram.timeline.forEach(t => {
+                tlContainer.innerHTML += `
+                    <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #222; padding-bottom:15px;">
+                        <span style="color:var(--gold); width:60px; font-weight:700; font-size:14px;">${t.t}</span>
+                        <span style="color:#ddd; font-size:14px;">${t.d}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('view-detail').style.display = 'block';
+        }
+
+        function closeDetail() {
+            document.getElementById('view-detail').style.display = 'none';
+        }
+
+        // 3. Hexagon Test Logic
+        let qIdx = 0;
+        let userScore = 0;
+
+        function startHexagonTest() {
+            document.getElementById('view-test').style.display = 'flex';
+            qIdx = 0;
+            renderQ();
+        }
+
+        function renderQ() {
+            const q = questions[qIdx];
+            document.getElementById('q-idx').innerText = qIdx + 1;
+            document.getElementById('q-title').innerText = q.q;
+            
+            const optsContainer = document.getElementById('q-opts');
+            optsContainer.innerHTML = '';
+
+            q.opts.forEach((opt, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = () => nextQ(i);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function nextQ(choiceIdx) {
+            // Scoring Logic (0번 선택지가 가장 점수 높음)
+            userScore += (4 - choiceIdx); 
+
+            qIdx++;
+            if (qIdx < questions.length) {
+                renderQ();
+            } else {
+                finishTest();
+            }
+        }
+
+        function finishTest() {
+            // 등급 판정 및 예약 페이지 이동
+            let grade = "SEED";
+            if (userScore >= 20) grade = "NOBLE";
+            else if (userScore >= 12) grade = "FLOWER";
+
+            alert(`[검증 완료]\n당신의 등급: ${grade}\n\n입장 가능 살롱: ${currentProgram.tag}\n\n*네이버 예약 페이지로 이동합니다.`);
+            // window.location.href = "YOUR_NAVER_BOOKING_LINK";
+            document.getElementById('view-test').style.display = 'none';
+        }
+
+    </script>
+</body>
+</html>
